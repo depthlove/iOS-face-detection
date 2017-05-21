@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "CameraSource.h"
 
-@interface ViewController ()
+@interface ViewController () <CameraSourceDelegate>
+
+@property (strong, nonatomic) CameraSource *camera;
 
 @end
 
@@ -17,8 +20,25 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    self.camera = [[CameraSource alloc] init];
+    [self.camera setupCameraFPS:15 useFront:true useInterfaceOrientation:YES sessionPreset:AVCaptureSessionPreset1280x720 callbackBlock:^{
+        
+    }];
+    self.camera.delegate = self;
+    
+    AVCaptureVideoPreviewLayer *previewLayer = nil;
+    [self.camera getPreviewLayer:&previewLayer];
+    previewLayer.frame = self.view.bounds;
+    previewLayer.masksToBounds = YES;
+    [self.view.layer addSublayer:previewLayer];
 }
 
+#pragma mark -- CameraSourceDelegate
+
+- (void)cameraSourceOutput:(CMSampleBufferRef)sampleBuffer {
+    NSLog(@"%s, %d", __func__, __LINE__);
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
