@@ -80,23 +80,6 @@
     return self;
 }
 
-- (void)dealloc {
-    if(_captureSession) {
-        [_captureSession stopRunning];
-        
-        _captureSession = nil;
-    }
-    if(_callbackSession) {
-        [[NSNotificationCenter defaultCenter] removeObserver:_callbackSession];
-        
-        _callbackSession = nil;
-    }
-    if(_previewLayer) {
-        _previewLayer = nil;
-    }
-    NSLog(@"%s", __FUNCTION__);
-}
-
 - (CameraSourceState)cameraState {
     return _cameraState;
 }
@@ -391,14 +374,6 @@ useInterfaceOrientation:(bool)useInterfaceOrientation
     }
 }
 
-- (void)bufferCaptured:(CMSampleBufferRef)sampleBuffer {
-    [self setOutput:sampleBuffer];
-}
-
-- (void)setOutput:(CMSampleBufferRef)sampleBuffer {
-    [self.delegate cameraSourceOutput:sampleBuffer];
-}
-
 - (bool)setContinuousAutofocus:(bool)wantsContinuous {
     AVCaptureDevice* device = _captureDevice;
     AVCaptureFocusMode newMode = wantsContinuous ?  AVCaptureFocusModeContinuousAutoFocus : AVCaptureFocusModeAutoFocus;
@@ -494,6 +469,31 @@ useInterfaceOrientation:(bool)useInterfaceOrientation
     }
     
     return ret;
+}
+
+- (void)bufferCaptured:(CMSampleBufferRef)sampleBuffer {
+    [self setOutput:sampleBuffer];
+}
+
+- (void)setOutput:(CMSampleBufferRef)sampleBuffer {
+    [self.delegate cameraSourceOutput:sampleBuffer];
+}
+
+- (void)dealloc {
+    if(_captureSession) {
+        [_captureSession stopRunning];
+        
+        _captureSession = nil;
+    }
+    if(_callbackSession) {
+        [[NSNotificationCenter defaultCenter] removeObserver:_callbackSession];
+        
+        _callbackSession = nil;
+    }
+    if(_previewLayer) {
+        _previewLayer = nil;
+    }
+    NSLog(@"%s", __FUNCTION__);
 }
 
 @end
